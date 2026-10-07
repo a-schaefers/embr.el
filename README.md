@@ -170,7 +170,7 @@ Canvas wins on input latency (30-35% lower at p50/p95), with zero render skips a
 | `embr-download-directory` | directory | `~/Downloads/` | Directory where downloaded files are saved. |
 | `embr-jpeg-quality` | integer | `80` | JPEG quality (1-100) for frame captures. Used by both screencast and screenshot. Lower values encode faster but degrade image quality. |
 | `embr-frame-source` | symbol | `'screencast` | `'screencast` uses CDP screencast (recommended). `'screenshot` uses polling only. |
-| `embr-render-backend` | symbol | `'auto` | `'auto` uses the native canvas pixel path when the running Emacs has native canvas images (Emacs 32+) and falls back to the JPEG file path otherwise. `'canvas` requires native canvas and errors when it is unavailable. `'default` always uses JPEG file + create-image. |
+| `embr-render-backend` | symbol | `'auto` | `'auto` uses the native canvas pixel path when the running Emacs has native canvas images (Emacs 32+) and falls back to the JPEG file path otherwise. `'canvas` requires native canvas and errors when it is unavailable. `'default` behaves exactly like `'auto`. |
 | `embr-display-method` | symbol | `'headless` | `'headless`, `'headed` (requires Xvfb), `'headed-offscreen` (requires Xvfb). |
 | `embr-dispatch-key` | string | `"C-c"` | Key that opens the transient dispatch menu. Must be set before embr is loaded. |
 | `embr-vimium-leader` | string | `"SPC"` | Key that opens the dispatch menu in vimium normal mode. |

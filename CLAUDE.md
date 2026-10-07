@@ -33,7 +33,7 @@ Two frame sources (`embr-frame-source`):
 Two render backends (`embr-render-backend`):
 
 - **`'default`**: Python writes JPEG to a temp file (`/tmp/embr-frame.jpg`), renames atomically. Emacs reads the file via `insert-file-contents-literally` and displays with `create-image`. Render timer batches frames.
-- **`'canvas`**: Python sends JPEG bytes over a Unix socket with a binary header (seq, width, height, length). Emacs native C module (`embr-canvas-blit-jpeg`) decodes and blits directly to a canvas pixel buffer, then calls `canvas-refresh`. Requires Emacs 32+ (native canvas images). `embr-render-backend` defaults to `'auto`: `embr--canvas-probe` (Emacs support, module build, module load, smoke blit) decides once per session and `embr--select-backend` falls back to `'default` with a one-time notice.
+- **`'canvas`**: Python sends JPEG bytes over a Unix socket with a binary header (seq, width, height, length). Emacs native C module (`embr-canvas-blit-jpeg`) decodes and blits directly to a canvas pixel buffer, then calls `canvas-refresh`. Requires Emacs 32+ (native canvas images). `embr-render-backend` defaults to `'auto` (`'default` behaves identically): `embr--canvas-probe` (Emacs support, module build, module load, smoke blit) decides once per session and `embr--select-backend` falls back to the JPEG file backend with a one-time notice.
 
 ## Buffer-Local State and Multi-Session
 

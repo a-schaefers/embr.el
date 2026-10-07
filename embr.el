@@ -262,14 +262,15 @@ at the cost of hover precision."
   "Render backend for frame display.
 `auto' uses the native canvas pixel path when the running Emacs has
 native canvas images (Emacs 32 and newer) and the embr-canvas module
-builds and loads, and otherwise falls back to `default'.
+builds and loads, and otherwise falls back to the JPEG file +
+`create-image' path, which works on any Emacs.
+`default' behaves exactly like `auto', so existing configurations that
+set it get native canvas automatically when it is available.
 `canvas' requires the native canvas path and signals an error when it
-is not available.
-`default' always uses the JPEG file + `create-image' path, which works
-on any Emacs."
+is not available."
   :type '(choice (const :tag "Auto (canvas when available)" auto)
                  (const :tag "Canvas (requires Emacs 32+)" canvas)
-                 (const :tag "Default (JPEG file)" default)))
+                 (const :tag "Default (same as auto)" default)))
 
 (defcustom embr-display-method 'headless
   "How the browser display is managed.
@@ -974,28 +975,24 @@ The result is computed once per Emacs session and cached in
   "Select the render backend based on `embr-render-backend'.
 Return \"canvas\" or \"default\", the names the daemon understands."
   (pcase embr-render-backend
-    ('auto
-     (if (eq (car (embr--canvas-probe)) 'available) "canvas" "default"))
     ('canvas
      (let ((probe (embr--canvas-probe)))
        (if (eq (car probe) 'available)
            "canvas"
          (error "embr: canvas backend requested but not available: %s"
                 (cdr probe)))))
-    (_ "default")))
+    ;; `auto' and `default' (and anything else) behave the same.
+    (_ (if (eq (car (embr--canvas-probe)) 'available) "canvas" "default"))))
 
 (defun embr--canvas-maybe-notify ()
   "Say once per session why frames go through the JPEG file backend.
 On an Emacs without native canvas images, point at Emacs 32 as the
 version that includes them.  When Emacs has them but the module could
 not be used, show the probe's diagnostic instead.  Do nothing when the
-user forced `default' on an Emacs that has native canvas."
+user forced `canvas', which signals its own error."
   (unless embr--canvas-notice-shown
-    (let ((probe (pcase embr-render-backend
-                   ('auto (embr--canvas-probe))
-                   ('default (and (not (embr--emacs-canvas-p))
-                                  (cons 'no-emacs-support nil)))
-                   (_ nil))))
+    (let ((probe (unless (eq embr-render-backend 'canvas)
+                   (embr--canvas-probe))))
       (when (and probe (not (eq (car probe) 'available)))
         (setq embr--canvas-notice-shown t)
         (if (eq (car probe) 'no-emacs-support)
